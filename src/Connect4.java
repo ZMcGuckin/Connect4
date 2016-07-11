@@ -1,10 +1,12 @@
-package mainPack;
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
 /**
- * Connect 4: Two-player Graphics version with Simple-OO
+ * Simple Connect 4 game created using Java Swing Graphics.
+ *
+ * @author Zach McGuckin
+ *
  */
 @SuppressWarnings("serial")
 public class Connect4 extends JFrame {
