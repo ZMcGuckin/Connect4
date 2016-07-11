@@ -49,7 +49,7 @@ public class Connect4 extends JFrame {
       canvas = new DrawCanvas();  // Construct a drawing canvas (a JPanel)
       canvas.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
 
-      // The canvas (JPanel) fires a MouseEvent upon mouse-click
+      // The canvas (JPanel) fires a MouseEvent upon mouse-movement
       canvas.addMouseMotionListener(new MouseAdapter()
       {
     	 @Override
