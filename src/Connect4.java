@@ -38,9 +38,11 @@ public class Connect4 extends JFrame {
    }
    private Seed currentPlayer;  // the current player
 
-   private Seed[][] board   ; // Game board of ROWS-by-COLS cells
+   private Seed[][] board; // Game board of ROWS-by-COLS cells
+   private Point[] winningSet; // The 4 in a Row that won
    private DrawCanvas canvas; // Drawing canvas (JPanel) for the game board
    private JLabel statusBar;  // Status Bar
+   private int mouseX2;
 
    /** Constructor to setup the game and the GUI components */
    public Connect4() {
@@ -48,13 +50,19 @@ public class Connect4 extends JFrame {
       canvas.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
 
       // The canvas (JPanel) fires a MouseEvent upon mouse-click
+      canvas.addMouseMotionListener(new MouseAdapter()
+      {
+    	 @Override
+    	 public void mouseMoved(MouseEvent e){
+    		 mouseX2 = e.getX();
+    		 repaint();
+    	 }
+      });
+      // The canvas (JPanel) fires a MouseEvent upon mouse-click
       canvas.addMouseListener(new MouseAdapter() {
          @Override
          public void mouseClicked(MouseEvent e) {  // mouse-clicked handler
             int mouseX = e.getX();
-            //int mouseY = e.getY();
-            // Get the row and column clicked
-            //int rowSelected = mouseY / CELL_SIZE;
             int colSelected = mouseX / CELL_SIZE;
 
             if (currentState == GameState.PLAYING) {
@@ -94,6 +102,7 @@ public class Connect4 extends JFrame {
       setVisible(true);  // show this JFrame
 
       board = new Seed[ROWS][COLS]; // allocate array
+      winningSet = new Point[4];
       initGame(); // initialize the game board contents and game variables
    }
 
@@ -142,6 +151,7 @@ public class Connect4 extends JFrame {
 		   if (board[rowSelected][col] == theSeed)
 		   {
 			   count++;
+			   winningSet[count-1] = new Point(col, rowSelected);
 			   if (count == 4)
 			   	    return true;  // found
 		   }
@@ -154,6 +164,7 @@ public class Connect4 extends JFrame {
 		   if (board[row][colSelected] == theSeed)
 		   {
 			   count++;
+			   winningSet[count-1] = new Point(colSelected, row);
 			   if (count == 4)
 			   	    return true;  // found
 		   }
@@ -168,11 +179,13 @@ public class Connect4 extends JFrame {
 	   			if(board[row][col] == theSeed)
 	   			{
 	   				count++;
+	   				winningSet[count-1] = new Point(col, row);
 		   			for(int i = 1; i<4; i++)
 		   			{
 		   				if(board[row+i][col+i] == theSeed)
 		   				{
 		   					count++;
+		   					winningSet[count-1] = new Point(col+i, row+i);
 		   					if(count == 4)
 		   						return true;
 		   				}
@@ -193,11 +206,13 @@ public class Connect4 extends JFrame {
 	   			if(board[row][col] == theSeed)
 	   			{
 	   				count++;
+	   				winningSet[count-1] = new Point(col, row);
 		   			for(int i = 1; i<4; i++)
 		   			{
 		   				if(board[row+i][col-i] == theSeed)
 		   				{
 		   					count++;
+		   					winningSet[count-1] = new Point(col-i, row+i);
 		   					if(count == 4)
 		   						return true;
 		   				}
@@ -219,18 +234,42 @@ public class Connect4 extends JFrame {
       @Override
       public void paintComponent(Graphics g) {  // invoke via repaint()
          super.paintComponent(g);    // fill background
-         /*
-         int stupid = (int)(Math.random()*4)+1;
-         if(stupid == 1)
-         	setBackground(Color.WHITE); // set its background color
-         else if(stupid == 2)
-         	setBackground(Color.BLACK); // set its background color
-         else if(stupid == 3)
-         	setBackground(Color.GRAY); // set its background color
-         else
-         	setBackground(Color.BLUE); // set its background color
-         	*/
 
+         // Use Graphics2D which allows us to set the pen's stroke
+         Graphics2D g2d = (Graphics2D)g;
+         g2d.setStroke(new BasicStroke(SYMBOL_STROKE_WIDTH, BasicStroke.CAP_ROUND,
+               BasicStroke.JOIN_ROUND));  // Graphics2D only
+         
+         //Print where the current player is about to play with piece
+         if(currentState == GameState.PLAYING){
+        	 if(currentPlayer == Seed.NOUGHT){
+        		 g2d.setColor(Color.BLUE);
+        	 } else{
+        		 g2d.setColor(Color.RED);
+        	 }
+        	 int x1 = mouseX2 / CELL_SIZE * CELL_SIZE + CELL_PADDING;
+             int y1 = 0 * CELL_SIZE + CELL_PADDING;
+        	 g2d.fillOval(x1, y1, SYMBOL_SIZE, SYMBOL_SIZE);
+         }
+         
+         //Print where the current player is about to play by highlighting
+         if(currentState == GameState.PLAYING){
+        	 g2d.setColor(Color.YELLOW);
+        	 int x1 = mouseX2 / CELL_SIZE * CELL_SIZE;
+             int y1 = 0 * CELL_SIZE;
+        	 g2d.fillRect(x1, y1, CELL_SIZE, CANVAS_HEIGHT);
+         }
+         
+         //Highlight the winning set
+         if(currentState == GameState.CROSS_WON || currentState == GameState.NOUGHT_WON){
+        	 g2d.setColor(Color.GREEN);
+        	 for(int i=0; i<winningSet.length; i++){
+        		 int x1 = winningSet[i].x * CELL_SIZE;
+        		 int y1 = winningSet[i].y * CELL_SIZE;
+        		 g2d.fillRect(x1, y1, CELL_SIZE, CELL_SIZE);
+        	 }
+         }
+         
          // Draw the grid-lines
          g.setColor(Color.LIGHT_GRAY);
          for (int row = 1; row < ROWS; ++row) {
@@ -243,10 +282,6 @@ public class Connect4 extends JFrame {
          }
 
          // Draw the Seeds of all the cells if they are not empty
-         // Use Graphics2D which allows us to set the pen's stroke
-         Graphics2D g2d = (Graphics2D)g;
-         g2d.setStroke(new BasicStroke(SYMBOL_STROKE_WIDTH, BasicStroke.CAP_ROUND,
-               BasicStroke.JOIN_ROUND));  // Graphics2D only
          for (int row = 0; row < ROWS; ++row) {
             for (int col = 0; col < COLS; ++col) {
                int x1 = col * CELL_SIZE + CELL_PADDING;
@@ -275,31 +310,12 @@ public class Connect4 extends JFrame {
             statusBar.setForeground(Color.RED);
             statusBar.setText("It's a Draw! Click to play again.");
          } else if (currentState == GameState.CROSS_WON) {
-            statusBar.setForeground(Color.RED);
+            statusBar.setForeground(Color.GREEN);
             statusBar.setText("Player 1 Won! Click to play again.");
          } else if (currentState == GameState.NOUGHT_WON) {
-            statusBar.setForeground(Color.RED);
+            statusBar.setForeground(Color.GREEN);
             statusBar.setText("Player 2 Won! Click to play again.");
          }
-         JPanel btnPanel = new JPanel(new FlowLayout());
-      	 btnPanel.add(btnRestart);
-
-      	 btnRestart.addActionListener(new ActionListener() {
-         @Override
-         public void actionPerformed(ActionEvent e) {
-            initGame();
-            requestFocus(); // change the focus to JFrame to receive KeyEvent
-         }
-      	 });
-
-         btnRestart.addMouseListener(new java.awt.event.MouseAdapter(){
-      	 public void mouseEntered(java.awt.event.MouseEvent evt) {
-      		btnRestart.setBackground(Color.GREEN);
-      	 }
-       	 public void mouseExited(java.awt.event.MouseEvent evt) {
-      		btnRestart.setBackground(UIManager.getColor("control"));
-      	 }
-         });
       }
    }
 
