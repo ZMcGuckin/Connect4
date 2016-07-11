@@ -34,7 +34,7 @@ public class Connect4 extends JFrame {
 
    // Use an enumeration (inner class) to represent the seeds and cell contents
    public enum Seed {
-      EMPTY, CROSS, NOUGHT
+      EMPTY, RED, BLUE
    }
    private Seed currentPlayer;  // the current player
 
@@ -73,7 +73,7 @@ public class Connect4 extends JFrame {
         				board[row][colSelected] = currentPlayer; // Make a move
          				updateGame(currentPlayer, row, colSelected); // update state
        				  	// Switch player
-        				currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+        				currentPlayer = (currentPlayer == Seed.RED) ? Seed.BLUE : Seed.RED;
          				break;
       				}
    				 }
@@ -114,14 +114,14 @@ public class Connect4 extends JFrame {
          }
       }
       currentState = GameState.PLAYING; // ready to play
-      currentPlayer = Seed.CROSS;       // cross plays first
+      currentPlayer = Seed.RED;       // cross plays first
    }
 
    /** Update the currentState after the player with "theSeed" has placed on
        (rowSelected, colSelected). */
    public void updateGame(Seed theSeed, int rowSelected, int colSelected) {
       if (hasWon(theSeed, rowSelected, colSelected)) {  // check for win
-         currentState = (theSeed == Seed.CROSS) ? GameState.CROSS_WON : GameState.NOUGHT_WON;
+         currentState = (theSeed == Seed.RED) ? GameState.CROSS_WON : GameState.NOUGHT_WON;
       } else if (isDraw()) {  // check for draw
          currentState = GameState.DRAW;
       }
@@ -242,7 +242,7 @@ public class Connect4 extends JFrame {
          
          //Print where the current player is about to play with piece
          if(currentState == GameState.PLAYING){
-        	 if(currentPlayer == Seed.NOUGHT){
+        	 if(currentPlayer == Seed.BLUE){
         		 g2d.setColor(Color.BLUE);
         	 } else{
         		 g2d.setColor(Color.RED);
@@ -286,12 +286,12 @@ public class Connect4 extends JFrame {
             for (int col = 0; col < COLS; ++col) {
                int x1 = col * CELL_SIZE + CELL_PADDING;
                int y1 = row * CELL_SIZE + CELL_PADDING;
-               if (board[row][col] == Seed.CROSS) {
+               if (board[row][col] == Seed.RED) {
                		//for(int i = 0; i<)
                   g2d.setColor(Color.RED);
                   g2d.fillOval(x1, y1, SYMBOL_SIZE, SYMBOL_SIZE);
                   repaint();
-               } else if (board[row][col] == Seed.NOUGHT) {
+               } else if (board[row][col] == Seed.BLUE) {
                   g2d.setColor(Color.BLUE);
                   g2d.fillOval(x1, y1, SYMBOL_SIZE, SYMBOL_SIZE);
                }
@@ -301,10 +301,12 @@ public class Connect4 extends JFrame {
          // Print status-bar message
          if (currentState == GameState.PLAYING) {
             statusBar.setForeground(Color.BLACK);
-            if (currentPlayer == Seed.CROSS) {
-               statusBar.setText("Player 1's Turn");
+            if (currentPlayer == Seed.RED) {
+               statusBar.setForeground(Color.RED);
+               statusBar.setText("Red's Turn");
             } else {
-               statusBar.setText("Player 2's Turn");
+               statusBar.setForeground(Color.BLUE);
+               statusBar.setText("Blue's Turn");
             }
          } else if (currentState == GameState.DRAW) {
             statusBar.setForeground(Color.RED);
