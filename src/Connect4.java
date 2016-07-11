@@ -21,14 +21,14 @@ public class Connect4 extends JFrame {
    public static final int CANVAS_HEIGHT = CELL_SIZE * ROWS;
    public static final int GRID_WIDTH = 8;                   // Grid-line's width
    public static final int GRID_WIDTH_HALF = GRID_WIDTH / 2; // Grid-line's half-width
-   // Symbols (cross/nought) are displayed inside a cell, with padding from border
+   // Symbols (red/blue) are displayed inside a cell, with padding from border
    public static final int CELL_PADDING = CELL_SIZE / 6;
    public static final int SYMBOL_SIZE = CELL_SIZE - CELL_PADDING * 2; // width/height
    public static final int SYMBOL_STROKE_WIDTH = 8; // pen's stroke width
 
    // Use an enumeration (inner class) to represent the various states of the game
    public enum GameState {
-      PLAYING, DRAW, CROSS_WON, NOUGHT_WON
+      PLAYING, DRAW, RED_WON, BLUE_WON
    }
    private GameState currentState;  // the current game state
 
@@ -121,7 +121,7 @@ public class Connect4 extends JFrame {
        (rowSelected, colSelected). */
    public void updateGame(Seed theSeed, int rowSelected, int colSelected) {
       if (hasWon(theSeed, rowSelected, colSelected)) {  // check for win
-         currentState = (theSeed == Seed.RED) ? GameState.CROSS_WON : GameState.NOUGHT_WON;
+         currentState = (theSeed == Seed.RED) ? GameState.RED_WON : GameState.BLUE_WON;
       } else if (isDraw()) {  // check for draw
          currentState = GameState.DRAW;
       }
@@ -261,7 +261,7 @@ public class Connect4 extends JFrame {
          }
          
          //Highlight the winning set
-         if(currentState == GameState.CROSS_WON || currentState == GameState.NOUGHT_WON){
+         if(currentState == GameState.RED_WON || currentState == GameState.BLUE_WON){
         	 g2d.setColor(Color.GREEN);
         	 for(int i=0; i<winningSet.length; i++){
         		 int x1 = winningSet[i].x * CELL_SIZE;
@@ -311,12 +311,12 @@ public class Connect4 extends JFrame {
          } else if (currentState == GameState.DRAW) {
             statusBar.setForeground(Color.RED);
             statusBar.setText("It's a Draw! Click to play again.");
-         } else if (currentState == GameState.CROSS_WON) {
+         } else if (currentState == GameState.RED_WON) {
             statusBar.setForeground(Color.GREEN);
-            statusBar.setText("Player 1 Won! Click to play again.");
-         } else if (currentState == GameState.NOUGHT_WON) {
+            statusBar.setText("Red Won! Click to play again.");
+         } else if (currentState == GameState.BLUE_WON) {
             statusBar.setForeground(Color.GREEN);
-            statusBar.setText("Player 2 Won! Click to play again.");
+            statusBar.setText("Blue Won! Click to play again.");
          }
       }
    }
