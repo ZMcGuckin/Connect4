@@ -13,7 +13,6 @@ public class Connect4 extends JFrame {
    // Named-constants for the game board
    public static final int ROWS = 7;  // ROWS by COLS cells
    public static final int COLS = 7;
-   public static final JButton btnRestart = new JButton("Restart");
 
    // Named-constants of the various dimensions used for graphics drawing
    public static final int CELL_SIZE = 100; // cell width and height (square)
@@ -114,7 +113,7 @@ public class Connect4 extends JFrame {
          }
       }
       currentState = GameState.PLAYING; // ready to play
-      currentPlayer = Seed.RED;       // cross plays first
+      currentPlayer = Seed.RED;       // red plays first
    }
 
    /** Update the currentState after the player with "theSeed" has placed on
@@ -287,10 +286,8 @@ public class Connect4 extends JFrame {
                int x1 = col * CELL_SIZE + CELL_PADDING;
                int y1 = row * CELL_SIZE + CELL_PADDING;
                if (board[row][col] == Seed.RED) {
-               		//for(int i = 0; i<)
                   g2d.setColor(Color.RED);
                   g2d.fillOval(x1, y1, SYMBOL_SIZE, SYMBOL_SIZE);
-                  repaint();
                } else if (board[row][col] == Seed.BLUE) {
                   g2d.setColor(Color.BLUE);
                   g2d.fillOval(x1, y1, SYMBOL_SIZE, SYMBOL_SIZE);
