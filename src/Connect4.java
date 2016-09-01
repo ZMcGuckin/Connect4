@@ -6,6 +6,7 @@ import javax.swing.*;
  * Simple Connect 4 game created using Java Swing Graphics.
  *
  * @author Zach McGuckin
+ * includes some code snips from online sources
  *
  */
 @SuppressWarnings("serial")
